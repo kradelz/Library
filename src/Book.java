@@ -11,6 +11,10 @@ public class Book {
         this.available = true;
     }
 
+    public boolean isAvailable() {
+        return this.available;
+    }
+
     public void borrowBook(){
         this.available = false;
     }
