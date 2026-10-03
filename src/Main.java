@@ -15,7 +15,7 @@ public class Main {
     static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Book> books = new ArrayList<>();
-        books.add(new Book("Atesten Gomlek","Halide Edip Adıvar",1919));
+        books.add(new Book("Atesten Gomlek","Halide Edip Adıvar",1922));
         books.add(new Book("Art of War","Sun Tzu", -500));
 
 
