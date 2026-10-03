@@ -22,10 +22,9 @@ public class Book {
     @Override
     public String toString() {
         String availableText;
-        if (this.available = false) {
-        availableText = "not available";
-
-     }
+        if (!this.available) {
+            availableText = "unavailable";
+        }
         else {
             availableText = "available";
         }
