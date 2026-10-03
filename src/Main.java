@@ -100,6 +100,7 @@ public class Main {
                     ArrayList<Book> foundBooks = findBook(bookName, books);
 
                     if (foundBooks.isEmpty()) System.out.println("Could not find book.");
+                    System.out.println("Found these books matching the entered string:");
                     for (Book b : foundBooks) {
                         System.out.println(b);
                     }
