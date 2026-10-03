@@ -4,12 +4,8 @@ import java.util.Scanner;
 
 public class Main {
     static Optional<Book> findBook(String bookName, ArrayList<Book> books) {
-        Book foundBook = new Book("invalid", "invalid", Integer.MIN_VALUE);
-
         for (Book comparedBook : books) {
             if (comparedBook.title.equals(bookName)) {
-                // System.out.println("Found the book.");
-                // System.out.println(comparedBook.toString());
                 return Optional.of(comparedBook);
             }
         }
@@ -49,9 +45,7 @@ public class Main {
                 newYear = scanner.nextInt();
                 books.add(new Book(newTitle,newAuthor,newYear));
             } else if (action == 2) {
-                for (int i = 0; i < books.size(); i++) {
-                    Book book = books.get(i);
-
+                for (Book book : books) {
                     System.out.println(book.toString());
                 }
             }
