@@ -1,7 +1,7 @@
 public class Book {
-    String title;
-    String author;
-    int year;
+    private String title;
+    private String author;
+    private int year;
     private boolean borrowed;
 
     public Book(String title, String author, int year) {
@@ -10,6 +10,27 @@ public class Book {
         this.year = year;
         this.borrowed = false;
     }
+
+    public String getTitle() {
+        return this.title;
+    }
+    public String getAuthor() {
+        return this.author;
+    }
+    public int getYear() {
+        return this.year;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    public void setYear(int year) {
+        this.year = year;
+    }
+
 
     public boolean isAvailable() {
         return !this.borrowed;
@@ -23,10 +44,10 @@ public class Book {
     public String toString() {
         String availableText;
         if (this.borrowed) {
-            availableText = "unavailable";
+            availableText = "Borrowed";
         }
         else {
-            availableText = "available";
+            availableText = "Available";
         }
         return this.title + " | " + this.author + " | " + this.year + " | " + availableText;
 

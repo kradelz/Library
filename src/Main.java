@@ -7,8 +7,10 @@ public class Main {
 
     static ArrayList<Book> findBook(String searchedString, ArrayList<Book> books) {
         ArrayList<Book> foundBooks = new ArrayList<>();
+        searchedString = searchedString.toLowerCase();
+
         for (Book comparedBook : books) {
-            if (comparedBook.title.equals(searchedString) || comparedBook.author.equals(searchedString)) {
+            if (comparedBook.getTitle().toLowerCase().contains(searchedString) || comparedBook.getAuthor().toLowerCase().contains(searchedString)) {
                 foundBooks.add(comparedBook);
             }
         }
@@ -21,12 +23,14 @@ public class Main {
         // skip choosing a book
         if (possibleBooks.size() == 1) {
             return Optional.of(possibleBooks.get(0));
+        } else if (possibleBooks.isEmpty()) {
+            return Optional.empty();
         }
 
         System.out.println("Please pick which book you want. To pick a book you need to enter in its index. Giving -1 exits the search.");
         for (int i=0; i<possibleBooks.size(); i++) {
             Book b = possibleBooks.get(i);
-            System.out.printf("%d %s", i + 1, b);  // humans use 1 based index.
+            System.out.printf("%d %s%n", i + 1, b);  // humans use 1 based index.
         }
         System.out.print("Enter in index: ");
 
@@ -45,13 +49,13 @@ public class Main {
         }
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         ArrayList<Book> books = new ArrayList<>();
         books.add(new Book("Atesten Gomlek","Halide Edip Adıvar",1922));
         books.add(new Book("Art of War","Sun Tzu", -500));
 
-
-        while (true) {
+        boolean running = true;
+        while (running) {
             System.out.println("1. Add a book");
             System.out.println("2. Show all books");
             System.out.println("3. Search for a book");
@@ -59,77 +63,93 @@ public class Main {
             System.out.println("5. Return a book");
             System.out.println("6. Exit");
             System.out.println("Please enter in an action : ");
-            int action = scanner.nextInt();
 
-            // this is needed because nextInt() does not consume the newline char in input buffer
-            scanner.nextLine();
-
-            if (action == 1) {
-                String newTitle;
-                String newAuthor;
-                int newYear;
-
-                System.out.println("Please enter book's title : ");
-                newTitle = scanner.nextLine();
-                System.out.println("Please enter book's author : ");
-                newAuthor = scanner.nextLine();
-                System.out.println("Please enter book's publishing year : ");
-                newYear = scanner.nextInt();
-                books.add(new Book(newTitle,newAuthor,newYear));
-            } else if (action == 2) {
-                for (Book book : books) {
-                    System.out.println(book.toString());
-                }
+            int action;
+            try {
+                action = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid integer.");
+                continue;
             }
-            else if (action == 3) {  // search
-                System.out.print("Please put in a book title/author: ");
-                String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
-                if (optionalBook.isPresent()) {
-                    Book b = optionalBook.get();
-                    System.out.println("Found book.");
-                    System.out.println(b);
-                } else {
-                    System.out.println("Could not find book.");
-                }
-            } else if (action == 4) {
-                System.out.print("Please put in a book title/author: ");
-                String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
-                if (optionalBook.isPresent())  {
-                    Book b = optionalBook.get();
-                    System.out.printf("Found the book: %s\n", b);
-                    if (b.isAvailable()) {
-                        System.out.println("Book is available. Borrowing...");
-                        b.borrowBook();
-                    } else {
-                        System.out.println("Unfortunately book is not available.");
-                    }
-                }else {
-                    System.out.println("Book cannot be found.");
-                }
-            } else if (action == 5) {
-                System.out.print("Please put in a book title/author: ");
-                String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
 
-                if (optionalBook.isPresent()) {
-                    Book b = optionalBook.get();
-                    System.out.printf("Found the book: %s\n", b);
-                    if (!b.isAvailable()) {
-                        b.returnBook();
-                        System.out.println("Book was successfully returned.");
-                    }
-                    else {
-                        System.out.println("Book is already available. Cannot be returned.");
-                    }
-                } else {
-                    System.out.println("Book cannot be found.");
+            switch (action) {
+                case 1: {
+                    String newTitle;
+                    String newAuthor;
+                    int newYear;
+
+                    System.out.println("Please enter book's title : ");
+                    newTitle = scanner.nextLine();
+                    System.out.println("Please enter book's author : ");
+                    newAuthor = scanner.nextLine();
+                    System.out.println("Please enter book's publishing year : ");
+                    newYear = scanner.nextInt();
+                    scanner.nextLine();
+                    books.add(new Book(newTitle,newAuthor,newYear));
+                    break;
                 }
-            } else if (action == 6) {
-                break;
-            } else {
-                System.out.println("Invalid action.");
+                case 2: {
+                    for (Book book : books) {
+                        System.out.println(book);
+                    }
+                    break;
+                }
+                case 3: {
+                    System.out.print("Please put in a book title/author: ");
+                    String bookName = scanner.nextLine().trim();
+                    ArrayList<Book> foundBooks = findBook(bookName, books);
+
+                    if (foundBooks.isEmpty()) System.out.println("Could not find book.");
+                    for (Book b : foundBooks) {
+                        System.out.println(b);
+                    }
+                    break;
+                }
+                case 4: {
+                    System.out.print("Please put in a book title/author: ");
+                    String bookName = scanner.nextLine().trim();
+                    Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
+                    if (optionalBook.isPresent())  {
+                        Book b = optionalBook.get();
+                        System.out.printf("Found the book: %s\n", b);
+                        if (b.isAvailable()) {
+                            System.out.println("Book is available. Borrowing...");
+                            b.borrowBook();
+                        } else {
+                            System.out.println("Unfortunately book is not available.");
+                        }
+                    }else {
+                        System.out.println("Book cannot be found.");
+                    }
+                    break;
+                }
+                case 5: {
+                    System.out.print("Please put in a book title/author: ");
+                    String bookName = scanner.nextLine().trim();
+                    Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
+
+                    if (optionalBook.isPresent()) {
+                        Book b = optionalBook.get();
+                        System.out.printf("Found the book: %s\n", b);
+                        if (!b.isAvailable()) {
+                            b.returnBook();
+                            System.out.println("Book was successfully returned.");
+                        }
+                        else {
+                            System.out.println("Book is already available. Cannot be returned.");
+                        }
+                    } else {
+                        System.out.println("Book cannot be found.");
+                    }
+                    break;
+                }
+                case 6: {
+                    running = false;
+                    break;
+                }
+                default: {
+                    System.out.println("Invalid action.");
+                }
             }
         }
 
