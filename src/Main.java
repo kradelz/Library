@@ -3,17 +3,49 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
-    static Optional<Book> findBook(String bookName, ArrayList<Book> books) {
+    private static final Scanner scanner = new Scanner(System.in);
+
+    static ArrayList<Book> findBook(String searchedString, ArrayList<Book> books) {
+        ArrayList<Book> foundBooks = new ArrayList<>();
         for (Book comparedBook : books) {
-            if (comparedBook.title.equals(bookName)) {
-                return Optional.of(comparedBook);
+            if (comparedBook.title.equals(searchedString) || comparedBook.author.equals(searchedString)) {
+                foundBooks.add(comparedBook);
             }
         }
-        return Optional.empty();
+        return foundBooks;
+    }
+
+    static Optional<Book> findAndPickOneBook(String searchedString, ArrayList<Book> books) {
+        ArrayList<Book> possibleBooks = findBook(searchedString, books);
+
+        // skip choosing a book
+        if (possibleBooks.size() == 1) {
+            return Optional.of(possibleBooks.get(0));
+        }
+
+        System.out.println("Please pick which book you want. To pick a book you need to enter in its index. Giving -1 exits the search.");
+        for (int i=0; i<possibleBooks.size(); i++) {
+            Book b = possibleBooks.get(i);
+            System.out.printf("%d %s", i + 1, b);  // humans use 1 based index.
+        }
+        System.out.print("Enter in index: ");
+
+        int index = scanner.nextInt();
+        scanner.nextLine();  // consume \n
+        if (index == -1) {
+            return Optional.empty();
+        }
+
+        index -= 1;
+        try {
+            Book b = possibleBooks.get(index);
+            return Optional.of(b);
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
     }
 
     static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         ArrayList<Book> books = new ArrayList<>();
         books.add(new Book("Atesten Gomlek","Halide Edip Adıvar",1922));
         books.add(new Book("Art of War","Sun Tzu", -500));
@@ -50,9 +82,9 @@ public class Main {
                 }
             }
             else if (action == 3) {  // search
-                System.out.print("Please put in a book name: ");
+                System.out.print("Please put in a book title/author: ");
                 String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findBook(bookName, books);
+                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
                 if (optionalBook.isPresent()) {
                     Book b = optionalBook.get();
                     System.out.println("Found book.");
@@ -61,9 +93,9 @@ public class Main {
                     System.out.println("Could not find book.");
                 }
             } else if (action == 4) {
-                System.out.println("Enter in book to borrow");
+                System.out.print("Please put in a book title/author: ");
                 String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findBook(bookName, books);
+                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
                 if (optionalBook.isPresent())  {
                     Book b = optionalBook.get();
                     System.out.printf("Found the book: %s\n", b);
@@ -77,15 +109,20 @@ public class Main {
                     System.out.println("Book cannot be found.");
                 }
             } else if (action == 5) {
-                System.out.print("Enter in book to return: ");
+                System.out.print("Please put in a book title/author: ");
                 String bookName = scanner.nextLine().trim();
-                Optional<Book> optionalBook = findBook(bookName, books);
+                Optional<Book> optionalBook = findAndPickOneBook(bookName, books);
 
                 if (optionalBook.isPresent()) {
                     Book b = optionalBook.get();
                     System.out.printf("Found the book: %s\n", b);
-                    b.returnBook();
-                    System.out.println("Book was successfully returned.");
+                    if (!b.isAvailable()) {
+                        b.returnBook();
+                        System.out.println("Book was successfully returned.");
+                    }
+                    else {
+                        System.out.println("Book is already available. Cannot be returned.");
+                    }
                 } else {
                     System.out.println("Book cannot be found.");
                 }

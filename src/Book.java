@@ -2,27 +2,27 @@ public class Book {
     String title;
     String author;
     int year;
-    private boolean available;
+    private boolean borrowed;
 
     public Book(String title, String author, int year) {
         this.title = title;
         this.author = author;
         this.year = year;
-        this.available = true;
+        this.borrowed = false;
     }
 
     public boolean isAvailable() {
-        return this.available;
+        return !this.borrowed;
     }
 
     public void borrowBook(){
-        this.available = false;
+        this.borrowed = true;
     }
 
     @Override
     public String toString() {
         String availableText;
-        if (!this.available) {
+        if (this.borrowed) {
             availableText = "unavailable";
         }
         else {
@@ -33,7 +33,7 @@ public class Book {
     }
 
     public void returnBook(){
-        this.available = true;
+        this.borrowed = false;
     }
 
 
